@@ -1,0 +1,249 @@
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+</head>
+<body>
+<canvas id="canvas" onclick="shoot" ></canvas>
+</body>
+<script>
+var count=0;var life=new heart(-10,-100,40,10,"blue");
+var bool=true;var score=10;
+var nob=new detect(0,0,40,20);
+var Tag=document.getElementById("canvas");
+Tag.setAttribute("style","width:100%;background-color:black; height:100%;");
+var area=document.getElementById("canvas");
+var contxt=area.getContext("2d");
+var block=[];
+var bullets=[];
+var ballplayer=new ball(120,120,40,20," purple");
+block.push(new blocks(10,-80,80,10,"white"));
+block.push(new blocks(50,-20,80,10,"white"));
+function blocks(x,y,width,height,color)
+{this.x=x;
+this.y=y;
+this.height=height;
+this.width=width;
+this.color=color;
+this.draw=function(){
+contxt.fillColor=this.color;
+contxt.fillStyle=this.color;
+contxt.fillRect(this.x,this.y+(count/1000),width,height);
+}
+this.clear=function(){
+contxt.clearRect(this.x,this.y,this.width,this.height);
+}
+this.other=function(e){
+var x=0; var y=0; var width=0; var height=0;
+x=e.x;
+y=e.y;
+width=e.width;
+height=e.height;
+}
+}
+function ball(x,y,width,height,color)
+{
+this.x=x;
+this.y=y;
+this.width=width;
+this.height=height;
+this.draw=function(){
+contxt.save();
+contxt.beginPath();
+contxt.arc(this.x,this.y, 10, 0, 2 * Math.PI); 
+contxt.fillStyle = "white";
+contxt.strokeStyle="black";
+contxt.fillColor=this.color;
+contxt.fillStyle=this.color;
+contxt.fillRect(this.x-20,this.y,width,height);
+contxt.stroke();
+contxt.fill();
+contxt.beginPath();
+contxt.translate(this.x,this.y+4);
+contxt.rotate(count);
+contxt.arc(-this.width/20,-this.height/15, 5,0, 2 * Math.PI);
+contxt.restore();
+contxt.fill();
+}}
+function caption(){
+
+contxt.save();
+contxt.font = '15px Arial';
+contxt.fillStyle = 'red';
+contxt.textAlign = 'center';
+contxt.textBaseline = 'middle';
+contxt.strokeStyle="black";
+contxt.stroke();
+this.toptext='SCORE:'+count;
+this.bottomtext='LIFE:'+score;
+this.x=230;
+this.xb=40;this.ow=10;
+this.o=10;
+if(score==0){
+contxt.font = '25px Arial';this.x=150;
+this.toptext="GAME OVER";this.ow=100;
+
+
+count=0;
+this.bottomtext="";contxt.fillStyle="white";
+}
+contxt.fillText(this.toptext, this.x,this.o);
+contxt.fillText(this.bottomtext ,this.xb,this.ow);
+
+contxt.fill();
+}
+
+function Thred(){
+contxt.clearRect(0,0,1000,1000);
+var upgrade=0;
+caption();
+ballplayer.draw();
+if(score!=0){
+
+for(var i=0; i<block.length-1; i++){
+
+
+block[i].draw();
+if(block[i].y==120)
+
+{
+var gene=Math.random(Math.floor(10))*15;
+upgrade=(Math.floor(10));
+block.push(new blocks((15*gene),-5,80,10,"white"));
+}
+if(block[i].y>110){
+var gene=Math.random(Math.floor(10))*15;
+block.push(new blocks((15*gene),-10,80,10,"white"));
+block.pop();
+
+
+}
+this.otherobj=function(){
+let otherbool=false;
+
+
+
+
+
+
+
+
+
+
+if(rectRectCollision(nob,block[i])!=false){
+otherbool=true;;
+}
+return otherbool;
+}
+
+if(rectRectCollision(block[i],ballplayer)!=false){
+score-=1;
+block[i].y=-100;
+
+}
+block[i].y+=1;
+
+}
+if(upgrade==1){
+
+life.draw();
+life.y=-1;
+}
+count++;
+}
+
+
+for(var i=0; i<bullets.length; i++){
+bullets[i].y=bullets[i].y-3;
+if(bullets[i].y<0){
+bullets[i].y=ballplayer.y-ballplayer.height;
+bullets[i].x=ballplayer.x-ballplayer.width/10;
+}
+bullets[i].draw();caption();
+}
+requestAnimationFrame(Thred);
+
+
+
+}
+Thred();
+area.addEventListener("touchmove", function(event) {
+  
+  var mouseX = event.touches[0].clientX;
+  var mouseY = event.touches[0].clientY;
+
+ if(score==0){
+
+score=10;
+
+}
+nob.x=mouseX;nob.y=mouseY;
+ ballplayer.x=mouseX-(ballplayer.width/2);
+});
+
+document.addEventListener('gesturestart', function(event) {
+  event.preventDefault();
+});
+
+
+
+function rectRectCollision(rect1, rect2) {
+  if (
+    rect1.x < rect2.x + rect2.width &&
+    rect1.x + rect1.width > rect2.x &&
+    rect1.y < rect2.y + rect2.height &&
+    rect1.y + rect1.height > rect2.y
+  ) {
+    return true;
+  }
+  return false;
+}
+
+function detect(x,y,width,height){
+this.width=width;
+this.height=height;
+this.x=x;
+this.y=y;
+
+}
+function bullet(x,y,width,height,color)
+{
+this.x=x;
+this.y=y;
+this.width=width;
+this.height=height;
+this.draw=function(){
+contxt.save();
+contxt.beginPath();
+contxt.arc(this.x,this.y, 10, 0, 2 * Math.PI); 
+contxt.fillStyle = "white";
+contxt.stroke();
+contxt.restore();
+contxt.fill();
+}}
+function heart(x,y,width,height,color)
+{
+this.x=x;
+this.y=y;
+this.width=width;
+this.height=height;
+this.draw=function(){
+contxt.save();
+contxt.beginPath();
+contxt.arc(this.x,this.y, 10, 0, 2 * Math.PI); 
+contxt.fillStyle = "white";
+contxt.stroke();
+contxt.restore();
+contxt.fill();
+contxt.save();
+contxt.beginPath();
+contxt.arc(this.x,this.y, 10, 0, 2 * Math.PI); 
+contxt.fillStyle = "white";
+contxt.stroke();
+contxt.restore();
+contxt.fill();
+}}
+bullets.push(new bullet(ballplayer.x,ballplayer.y-ballplayer.height+2,80,10,"white"));
+
+</script>
+
+</html>
